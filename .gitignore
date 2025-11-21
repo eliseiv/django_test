@@ -1,0 +1,75 @@
+# Python cache & logs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.db
+*.sqlite3
+
+# IDE / local configs
+.idea/
+.continue
+.env
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+core/local_settings.py
+
+# Frontend
+frontend/yarn.lock
+frontend/webpack-stats.json
+frontend/node_modules/
+frontend/dist/
+frontend/public/
+frontend/media/
+
+# RabbitMQ / Redis / Nginx configs
+.rabbitmq/
+config/redis.conf
+config/nginx/conf.d/default.conf
+
+# Django
+core/**/migrations/
+static/
+media/
+output_neverbaunce/
+
+# Microservices
+microservices/linkedin_service/config/driver/google-chrome/*
+microservices/gready_service/app/config/chrome_profile
+microservices/**/chrome/**
+microservices/*/data/out/*/*.html
+microservices/*/data/out/**/*.png
+microservices/**/downloaded_files
+microservices/**/user_data
+
+# Selenoid
+/selenoid/*
+!selenoid/config/browsers.json
+!**/.empty
+
+# NLTK
+nltk/
+nltk_data/
+!nltk_data/.empty
+
+# Lock / socket / tmp files
+*.sock
+*.lock
+tmp/
+tmp/**
+
+# Misc
+pyproject.toml
+poetry.lock
+start_TEST.sh
+
+# tests
+core/tests/keywords_categ.txt
+core/tests/keywords_used.txt
+core/tests/keywords_categ_free.txt
+core/tests/keywords_used_free.txt

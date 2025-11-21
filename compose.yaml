@@ -1,0 +1,64 @@
+  # docker compose up -d test_nginx
+  test_nginx:
+    image: nginx:latest
+    hostname: test_nginx
+    container_name: test_nginx
+    restart: unless-stopped
+    volumes:
+      - ./tmp:/code/tmp
+      - ./static:/code/static
+      - ./media:/code/media
+      - ./config/nginx/conf.d:/etc/nginx/conf.d
+      - /var/log/nginx:/var/log/nginx
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /home/test/nginx_htpasswd:/home/test/nginx_htpasswd:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - test
+
+
+  # docker compose build --no-cache test_django
+  test_django:
+    hostname: test_django
+    container_name: test_django
+    privileged: true
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - HOST_USER=$USER
+    command: [ "./django_entrypoint.sh" ]
+    restart: unless-stopped
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nproc: 65535
+      nofile:
+        soft: 65535
+        hard: 80535
+    volumes:
+      - .:/code
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - "HOST_USER=$USER"
+      - "DJANGO_SETTINGS_MODULE=core.settings"
+      - "DJANGO_SECRET_KEY=p#&854ai(wmh&g3ox0liswapuy79*%b(279iont%#c_l5+4&m"
+      - "DJANGO_DEBUG=False"
+      - "DJANGO_SECURE_HSTS_SECONDS=29592000"
+      - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"
+      - "DJANGO_SECURE_HSTS_PRELOAD=False"
+      - "DJANGO_SESSION_COOKIE_SECURE=False"
+      - "DJANGO_CSRF_COOKIE_SECURE=False"
+      - "ACCOUNT_DEFAULT_HTTP_PROTOCOL=http"
+      - "SEA_URL=http://65.108.251.66:4545/api/engines"
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: curl -f http://0.0.0.0:8000
+    depends_on:
+
+    networks:
+      - test
