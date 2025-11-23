@@ -30,7 +30,7 @@ services:
       dockerfile: Dockerfile
       args:
         - HOST_USER=${HOST_USER:-root}
-    command: [ "./django_entrypoint.sh" ]
+    command: [ "bash", "django_entrypoint.sh" ]
     restart: unless-stopped
     ulimits:
       memlock:
