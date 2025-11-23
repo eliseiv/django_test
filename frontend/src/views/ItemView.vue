@@ -1,15 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { loadStripe } from '@stripe/stripe-js'
 
 const route = useRoute()
+const router = useRouter()
 const item = ref(null)
 const loading = ref(true)
 const error = ref(null)
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY || 'pk_test_placeholder')
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY)
 
 onMounted(async () => {
   try {
@@ -23,7 +24,7 @@ onMounted(async () => {
   }
 })
 
-const handleBuy = async () => {
+const handleBuySession = async () => {
   try {
     const response = await axios.get(`/api/buy/${route.params.id}/`)
     const session = response.data
@@ -35,60 +36,60 @@ const handleBuy = async () => {
     
     if (error) {
       console.error(error)
+      alert("Stripe Error: " + error.message)
     }
   } catch (e) {
-    console.error("Buy failed", e)
-    alert("Buy failed")
+    console.error(e)
+    alert("Something went wrong: " + e.message)
   }
+}
+
+const handleBuyIntent = () => {
+  router.push({ name: 'pay-intent', params: { id: item.value.id } })
 }
 </script>
 
 <template>
-  <div class="item-container">
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
-    <div v-else-if="item" class="item-card">
-      <h1>{{ item.name }}</h1>
-      <p>{{ item.description }}</p>
-      <p class="price">
-        Price: {{ (item.price / 100).toFixed(2) }} <span class="currency">{{ item.currency.toUpperCase() }}</span>
-      </p>
-      <button @click="handleBuy" class="buy-btn">Buy Now</button>
+  <div class="container" v-if="item">
+    <h1>{{ item.name }}</h1>
+    <p class="price">{{ item.price / 100 }} {{ item.currency.toUpperCase() }}</p>
+    <p>{{ item.description }}</p>
+    
+    <div class="actions">
+      <button @click="handleBuySession" class="buy-btn">Buy (Checkout Session)</button>
+      <button @click="handleBuyIntent" class="buy-btn intent-btn">Buy (Payment Intent)</button>
     </div>
   </div>
+  <div v-else-if="loading">Loading...</div>
+  <div v-else-if="error">{{ error }}</div>
 </template>
 
 <style scoped>
-.item-container {
-  max-width: 600px;
+.container {
+  max-width: 800px;
   margin: 0 auto;
-  padding: 2rem;
-}
-.item-card {
-  border: 1px solid #ddd;
-  padding: 2rem;
-  border-radius: 8px;
-  background: #f9f9f9;
+  padding: 20px;
 }
 .price {
-  font-size: 1.2rem;
+  font-size: 1.5em;
   font-weight: bold;
-  margin: 1rem 0;
+  color: #2c3e50;
 }
-.currency {
-  color: #666;
-  font-size: 0.9rem;
+.actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
 }
 .buy-btn {
-  background-color: #5469d4;
+  background: #42b983;
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 4px;
+  font-size: 1.2em;
   cursor: pointer;
-  font-size: 16px;
+  border-radius: 4px;
 }
-.buy-btn:hover {
-  background-color: #4456b1;
+.intent-btn {
+  background: #5469d4; /* Stripe Blue */
 }
 </style>

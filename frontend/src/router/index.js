@@ -4,6 +4,7 @@ import ItemView from '../views/ItemView.vue'
 import OrderView from '../views/OrderView.vue'
 import SuccessView from '../views/SuccessView.vue'
 import CancelView from '../views/CancelView.vue'
+import PaymentIntentView from '../views/PaymentIntentView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -17,6 +18,11 @@ const router = createRouter({
       path: '/item/:id',
       name: 'item',
       component: ItemView
+    },
+    {
+      path: '/pay/:id', // New route for Payment Intent flow
+      name: 'pay-intent',
+      component: PaymentIntentView
     },
     {
       path: '/order/:id',

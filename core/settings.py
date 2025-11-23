@@ -134,8 +134,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True # For development simplicity
 
 # Stripe
+# Default (USD)
 STRIPE_PUBLIC_KEY = env('STRIPE_PUBLIC_KEY', default='pk_test_placeholder')
 STRIPE_SECRET_KEY = env('STRIPE_SECRET_KEY', default='sk_test_placeholder')
+
+# EUR
+STRIPE_PUBLIC_KEY_EUR = env('STRIPE_PUBLIC_KEY_EUR', default='pk_test_eur_placeholder')
+STRIPE_SECRET_KEY_EUR = env('STRIPE_SECRET_KEY_EUR', default='sk_test_eur_placeholder')
+
+def get_stripe_keys(currency='usd'):
+    if currency.lower() == 'eur':
+        return STRIPE_PUBLIC_KEY_EUR, STRIPE_SECRET_KEY_EUR
+    return STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY
 
 # Trusted Origins for CSRF (important for IP access)
 CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
