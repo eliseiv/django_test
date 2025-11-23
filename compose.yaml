@@ -1,3 +1,4 @@
+services:
   # docker compose up -d test_nginx
   test_nginx:
     image: nginx:latest
@@ -9,15 +10,15 @@
       - ./static:/code/static
       - ./media:/code/media
       - ./config/nginx/conf.d:/etc/nginx/conf.d
-      - /var/log/nginx:/var/log/nginx
-      - /etc/letsencrypt:/etc/letsencrypt
-      - /home/test/nginx_htpasswd:/home/test/nginx_htpasswd:ro
+      # Fixed for local Windows development:
+      - ./logs/nginx:/var/log/nginx
+      # - /etc/letsencrypt:/etc/letsencrypt
+      # - /home/test/nginx_htpasswd:/home/test/nginx_htpasswd:ro
     ports:
       - "80:80"
       - "443:443"
     networks:
       - test
-
 
   # docker compose build --no-cache test_django
   test_django:
@@ -28,7 +29,7 @@
       context: .
       dockerfile: Dockerfile
       args:
-        - HOST_USER=$USER
+        - HOST_USER=${HOST_USER:-root}
     command: [ "./django_entrypoint.sh" ]
     restart: unless-stopped
     ulimits:
@@ -41,12 +42,12 @@
         hard: 80535
     volumes:
       - .:/code
-      - /var/run/docker.sock:/var/run/docker.sock
+      # - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      - "HOST_USER=$USER"
+      - "HOST_USER=${HOST_USER:-root}"
       - "DJANGO_SETTINGS_MODULE=core.settings"
       - "DJANGO_SECRET_KEY=p#&854ai(wmh&g3ox0liswapuy79*%b(279iont%#c_l5+4&m"
-      - "DJANGO_DEBUG=False"
+      - "DJANGO_DEBUG=True"
       - "DJANGO_SECURE_HSTS_SECONDS=29592000"
       - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"
       - "DJANGO_SECURE_HSTS_PRELOAD=False"
@@ -57,8 +58,10 @@
     ports:
       - "8000:8000"
     healthcheck:
-      test: curl -f http://0.0.0.0:8000
-    depends_on:
-
+      test: curl -f http://0.0.0.0:8000 || exit 1
     networks:
       - test
+
+networks:
+  test:
+    driver: bridge

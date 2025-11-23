@@ -1,0 +1,7 @@
+django>=5.0
+djangorestframework
+stripe
+django-cors-headers
+gunicorn
+django-environ
+
