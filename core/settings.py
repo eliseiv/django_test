@@ -148,4 +148,9 @@ def get_stripe_keys(currency='usd'):
     return STRIPE_PUBLIC_KEY, STRIPE_SECRET_KEY
 
 # Trusted Origins for CSRF (important for IP access)
-CSRF_TRUSTED_ORIGINS = ['http://localhost', 'http://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost', 
+    'http://127.0.0.1',
+    'http://192.168.100.155',
+    'http://65.108.58.143'
+]
